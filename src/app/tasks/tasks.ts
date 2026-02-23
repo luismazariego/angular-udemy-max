@@ -1,15 +1,18 @@
 import { Component, Input } from '@angular/core';
 import { Task } from "./task/task";
+import { NewTask } from "./new-task/new-task";
+import { type NewTaskData } from './task/task.model';
 
 @Component({
   selector: 'app-tasks',
-  imports: [Task],
+  imports: [Task, NewTask],
   templateUrl: './tasks.html',
   styleUrl: './tasks.css',
 })
 export class Tasks {
   @Input({ required: true }) name?: string;
   @Input({ required: true }) userId!: string;
+  isAddingTask = false;
 
   dummyTasks = [
     {
@@ -40,5 +43,29 @@ export class Tasks {
   get selectedUserTasks() {
     return this.dummyTasks.filter(task => 
       task.userId === this.userId);
+  }
+
+  onCompleteTask(taskId: string) {
+    this.dummyTasks = this.dummyTasks.filter(task =>
+      task.id !== taskId);
+  }
+
+  onStartAddTask() {
+    this.isAddingTask = true;
+  }
+
+  onCancelAddTask() {
+    this.isAddingTask = false;
+  }
+
+  onAddTask(taskData: NewTaskData){
+    this.dummyTasks.unshift({
+      id: new Date().getTime().toString(),
+      userId: this.userId,
+      title: taskData.title,
+      summary: taskData.summary,
+      dueDate: taskData.dueDate
+    });
+    this.isAddingTask = false;
   }
 }
